@@ -23,4 +23,5 @@ public class Event {
     private EventId eventId;
     private Date endDate;
     private String location;
+    private String link;
 }

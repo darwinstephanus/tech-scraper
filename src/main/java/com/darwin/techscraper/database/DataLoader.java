@@ -10,5 +10,7 @@ import java.util.Map;
 
 public interface DataLoader {
 
-    Map<String, List<Event>> loadData() throws IOException, ParseException;
+    void loadDataComputerWorld() throws IOException, ParseException;
+
+    void loadDataTechMeme() throws IOException, ParseException;
 }
