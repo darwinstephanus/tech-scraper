@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Year;
 import java.util.*;
 
 @Component
@@ -28,36 +29,13 @@ public class DataLoaderImpl implements DataLoader {
     @Autowired
     EventDao eventDao;
 
-//    private Map<String,List<Event>> eventList = new HashMap<>();
-
     public void loadDataComputerWorld() throws IOException, ParseException {
         Document document = Jsoup.connect(link).get();
         Element table = document.getElementsByTag("tbody").get(0);
-//        System.out.println(table);
         Elements rows = table.select("tr");
         Elements href = rows.select("a");
 
-        //key
-//        Elements href = document.select("a[href]");
-//        for(Element temp : href) {
-//            System.out.println("AA: " + temp.attr("abs:href"));
-//        }
-
         for(int i=0; i<rows.size(); i++){
-
-
-//            for(Element temp : href) {
-//                System.out.println("AA: " + temp.attr("abs:href"));
-//            }
-//            System.out.println(href.get(0).attr("abs:href"));
-
-//            for(Element temp : href) {
-//                System.out.println("AA: " + temp);
-//            }
-//            System.out.println(href.get(0));
-//            String test = rows.get(i).text();
-//            String test = rows.get(i).select("a.href").text();
-//            System.out.println(test);
 
             //parse each information into strings
             Element firstTd = rows.get(i).child(0);
@@ -93,10 +71,6 @@ public class DataLoaderImpl implements DataLoader {
 
             eventDao.save(event);
         }
-
-
-//        countryList.forEach((k, v) -> System.out.println(k + " " + v.toString()));
-//        System.out.println("list size = " + countryList.size());
     }
 
     public void loadDataTechMeme() throws IOException, ParseException {
@@ -104,22 +78,109 @@ public class DataLoaderImpl implements DataLoader {
             Document document = Jsoup.connect(link2).get();
             Elements table = document.select("div.rhov");
             Elements href = table.select("a[href]");
+            int year = Year.now().getValue();;
+            int month = 1;
 
-            for(Element row : document.select("div.rhov")) {
-//                System.out.println(row);
-                String date = row.select("div:nth-of-type(1)").text();
-//                System.out.println(row.select("div:nth-of-type(1)"));
-//                String name = row.select("div:nth-of-type(2)").text();
-//                System.out.println(row.select("div:nth-of-type(2)"));
-//                String location = row.select("div:nth-of-type(3)").text();
-//                System.out.println(row.select("div:nth-of-type(3)"));
-//                String link = row.select("div:nth-of-type(1)").attr("abs:href");
-//                System.out.println(link);
+            for(int i=0; i<table.size(); i++){
+                Element firstTd = table.get(i).child(0);
 
-                String link = href.get(0).attr("abs:href");
-                System.out.println(link);
-//                System.out.println(row.attr("abs:href"));
+                //date
+                System.out.println(firstTd.select("div:nth-of-type(1)").text());
+                String dateBeforeSplit = firstTd.select("div:nth-of-type(1)").text();
+                String[] dates = dateBeforeSplit.split("-", 2);
+                String dateStartBeforeParse;
+                String dateEndBeforeParse;
+                if(dates.length == 0){
+                    throw new ParseException("Date length is 0", 0);
+                }
+                else if(dates.length == 1){
+                    dateStartBeforeParse = dates[0];
+                    dateEndBeforeParse = dates[0];
+                }
+                else {
+                    dateStartBeforeParse = dates[0];
+                    dateEndBeforeParse = dates[1];
+                }
 
+                //update year and month before parsing startdate
+                Date tempStart=new SimpleDateFormat("MMM dd").parse(dateStartBeforeParse);
+//                System.out.println(tempStart);
+                Calendar calStart = Calendar.getInstance();
+                calStart.setTime(tempStart);
+                //January is 0 in Calendar
+                int tempStartMonth = calStart.get(Calendar.MONTH) + 1;
+                if(month <= tempStartMonth){
+                    month = tempStartMonth;
+                }
+                else{
+                    month = tempStartMonth;
+                    year++;
+                }
+
+                //parse start date including removing space to "-" and add year
+                dateStartBeforeParse = dateStartBeforeParse.replaceAll(" ", "-");
+                dateStartBeforeParse = dateStartBeforeParse.concat("-");
+                dateStartBeforeParse = dateStartBeforeParse.concat(Integer.toString(year));
+
+
+                //parse for date end because there is no month sometimes
+                if(dateEndBeforeParse.length() < 3){
+//                    System.out.println(dateEndBeforeParse);
+                    String temp = dateStartBeforeParse.substring(0, 3);
+                    temp = temp.concat(" ");
+                    temp = temp.concat(dateEndBeforeParse);
+                    dateEndBeforeParse = temp;
+                }
+
+                //update year and month before parsing enddate
+                Date tempEnd=new SimpleDateFormat("MMM dd").parse(dateEndBeforeParse);
+//                System.out.println("tempEnd: " + tempEnd);
+                Calendar calEnd = Calendar.getInstance();
+                calEnd.setTime(tempEnd);
+                //January is 0 in Calendar
+                int tempEndMonth = calEnd.get(Calendar.MONTH) + 1;
+                if(month <= tempEndMonth){
+                    dateEndBeforeParse = dateEndBeforeParse.replaceAll(" ", "-");
+                    dateEndBeforeParse = dateEndBeforeParse.concat("-");
+                    dateEndBeforeParse = dateEndBeforeParse.concat(Integer.toString(year));
+                }
+                else{
+                    dateEndBeforeParse = dateEndBeforeParse.replaceAll(" ", "-");
+                    dateEndBeforeParse = dateEndBeforeParse.concat("-");
+                    dateEndBeforeParse = dateEndBeforeParse.concat(Integer.toString(year+1));
+                }
+
+//                dateEndBeforeParse = dateEndBeforeParse.replaceAll(" ", "-");
+//                dateEndBeforeParse = dateEndBeforeParse.concat("-");
+//                dateEndBeforeParse = dateEndBeforeParse.concat(Integer.toString(year));
+
+//                System.out.println(dateStartBeforeParse);
+//                System.out.println(dateEndBeforeParse);
+
+                Date startDate=new SimpleDateFormat("MMM-dd-yyyy").parse(dateStartBeforeParse);
+                Date endDate=new SimpleDateFormat("MMM-dd-yyyy").parse(dateEndBeforeParse);
+                System.out.println(startDate);
+                System.out.println(endDate);
+
+                //name
+                String nameBeforeSplit = firstTd.select("div:nth-of-type(2)").text();
+                String[] words = nameBeforeSplit.split(":", 2);
+                String nameAfterSplit;
+                if(words.length == 1){
+                    nameAfterSplit = words[0];
+                }
+                else{
+                    nameAfterSplit = words[1].trim();
+                }
+
+                //location
+                String location;
+                if(firstTd.select("div:nth-of-type(3)").text().equals("")){
+                    location = "Virtual";
+                }
+                else{
+                    location = firstTd.select("div:nth-of-type(3)").text();
+                }
             }
         }
         catch (Exception ex){
