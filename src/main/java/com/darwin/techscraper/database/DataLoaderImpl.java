@@ -56,7 +56,7 @@ public class DataLoaderImpl implements DataLoader {
             String locationEvent;
             locationEvent = fourthTd.text();
 
-            String link = href.get(i).attr("abs:href");
+            String linkEvent = href.get(i).attr("abs:href");
 
             //combine into event object
             EventId eventId = new EventId();
@@ -67,7 +67,7 @@ public class DataLoaderImpl implements DataLoader {
             event.setEventId(eventId);
             event.setEndDate(date2);
             event.setLocation(locationEvent);
-            event.setLink(link);
+            event.setLink(linkEvent);
 
             eventDao.save(event);
         }
@@ -78,6 +78,7 @@ public class DataLoaderImpl implements DataLoader {
             Document document = Jsoup.connect(link2).get();
             Elements table = document.select("div.rhov");
             Elements href = table.select("a[href]");
+
             int year = Year.now().getValue();;
             int month = 1;
 
@@ -85,7 +86,6 @@ public class DataLoaderImpl implements DataLoader {
                 Element firstTd = table.get(i).child(0);
 
                 //date
-                System.out.println(firstTd.select("div:nth-of-type(1)").text());
                 String dateBeforeSplit = firstTd.select("div:nth-of-type(1)").text();
                 String[] dates = dateBeforeSplit.split("-", 2);
                 String dateStartBeforeParse;
@@ -104,7 +104,6 @@ public class DataLoaderImpl implements DataLoader {
 
                 //update year and month before parsing startdate
                 Date tempStart=new SimpleDateFormat("MMM dd").parse(dateStartBeforeParse);
-//                System.out.println(tempStart);
                 Calendar calStart = Calendar.getInstance();
                 calStart.setTime(tempStart);
                 //January is 0 in Calendar
@@ -125,7 +124,6 @@ public class DataLoaderImpl implements DataLoader {
 
                 //parse for date end because there is no month sometimes
                 if(dateEndBeforeParse.length() < 3){
-//                    System.out.println(dateEndBeforeParse);
                     String temp = dateStartBeforeParse.substring(0, 3);
                     temp = temp.concat(" ");
                     temp = temp.concat(dateEndBeforeParse);
@@ -134,7 +132,6 @@ public class DataLoaderImpl implements DataLoader {
 
                 //update year and month before parsing enddate
                 Date tempEnd=new SimpleDateFormat("MMM dd").parse(dateEndBeforeParse);
-//                System.out.println("tempEnd: " + tempEnd);
                 Calendar calEnd = Calendar.getInstance();
                 calEnd.setTime(tempEnd);
                 //January is 0 in Calendar
@@ -150,17 +147,8 @@ public class DataLoaderImpl implements DataLoader {
                     dateEndBeforeParse = dateEndBeforeParse.concat(Integer.toString(year+1));
                 }
 
-//                dateEndBeforeParse = dateEndBeforeParse.replaceAll(" ", "-");
-//                dateEndBeforeParse = dateEndBeforeParse.concat("-");
-//                dateEndBeforeParse = dateEndBeforeParse.concat(Integer.toString(year));
-
-//                System.out.println(dateStartBeforeParse);
-//                System.out.println(dateEndBeforeParse);
-
                 Date startDate=new SimpleDateFormat("MMM-dd-yyyy").parse(dateStartBeforeParse);
                 Date endDate=new SimpleDateFormat("MMM-dd-yyyy").parse(dateEndBeforeParse);
-                System.out.println(startDate);
-                System.out.println(endDate);
 
                 //name
                 String nameBeforeSplit = firstTd.select("div:nth-of-type(2)").text();
@@ -181,6 +169,22 @@ public class DataLoaderImpl implements DataLoader {
                 else{
                     location = firstTd.select("div:nth-of-type(3)").text();
                 }
+
+                //url
+                String linkEvent = href.get(i).attr("abs:href");
+
+                //merge into object event
+                EventId eventId = new EventId();
+                eventId.setName(nameAfterSplit);
+                eventId.setStartDate(startDate);
+
+                Event event = new Event();
+                event.setEventId(eventId);
+                event.setEndDate(endDate);
+                event.setLocation(location);
+                event.setLink(linkEvent);
+
+                eventDao.save(event);
             }
         }
         catch (Exception ex){

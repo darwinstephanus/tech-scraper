@@ -17,8 +17,8 @@ public class TestController {
 
     @GetMapping("/test")
     public String test() throws IOException, ParseException {
-        dataLoader.loadDataTechMeme();
-//        dataLoader.loadDataComputerWorld();
+//        dataLoader.loadDataTechMeme();
+        dataLoader.loadDataComputerWorld();
         return "ABCD";
     }
 
