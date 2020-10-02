@@ -62,7 +62,7 @@ public class DatabaseController {
                     @Spec(path = "endDate", params = "endDate", spec = Equal.class),
                     @Spec(path = "location", params = "location", spec = In.class),
                     @Spec(path = "eventId.startDate", params = {"startDateGt", "startDateLt"}, spec = Between.class),
-                    @Spec(path = "eventId.endDate", params = {"endDateGt", "endDateLt"}, spec = Between.class)
+                    @Spec(path = "endDate", params = {"endDateGt", "endDateLt"}, spec = Between.class)
             }) Specification<Event> spec,
             Sort sort,
             @RequestHeader HttpHeaders headers) {
