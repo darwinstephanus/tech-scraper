@@ -1,12 +1,9 @@
-package com.darwin.techscraper.model;
+package com.darwin.techscraper.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 

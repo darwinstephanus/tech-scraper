@@ -1,4 +1,4 @@
-package com.darwin.techscraper.model;
+package com.darwin.techscraper.entity;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

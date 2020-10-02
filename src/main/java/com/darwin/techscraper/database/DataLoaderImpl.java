@@ -1,8 +1,8 @@
 package com.darwin.techscraper.database;
 
 import com.darwin.techscraper.dao.EventDao;
-import com.darwin.techscraper.model.Event;
-import com.darwin.techscraper.model.EventId;
+import com.darwin.techscraper.entity.Event;
+import com.darwin.techscraper.entity.EventId;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,7 +29,7 @@ public class DataLoaderImpl implements DataLoader {
     @Autowired
     EventDao eventDao;
 
-    public void loadDataComputerWorld() throws IOException, ParseException {
+    public String loadDataComputerWorld() throws IOException, ParseException {
         Document document = Jsoup.connect(link).get();
         Element table = document.getElementsByTag("tbody").get(0);
         Elements rows = table.select("tr");
@@ -71,9 +71,10 @@ public class DataLoaderImpl implements DataLoader {
 
             eventDao.save(event);
         }
+        return "Success!";
     }
 
-    public void loadDataTechMeme() throws IOException, ParseException {
+    public String loadDataTechMeme() throws IOException, ParseException {
         try{
             Document document = Jsoup.connect(link2).get();
             Elements table = document.select("div.rhov");
@@ -191,7 +192,7 @@ public class DataLoaderImpl implements DataLoader {
             ex.printStackTrace();
         }
 
-
+        return "Success!";
 
 //        Element table = document.getElementsByTag("events").get(0);
 //        System.out.println(table);
