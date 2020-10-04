@@ -58,7 +58,7 @@ public class DatabaseController {
                     @Spec(path = "eventId.name", params = "name", spec = Like.class),
                     @Spec(path = "eventId.startDate", params = "startDate", spec = Equal.class),
                     @Spec(path = "endDate", params = "endDate", spec = Equal.class),
-                    @Spec(path = "location", params = "location", spec = In.class),
+                    @Spec(path = "location", params = "location", spec = Like.class),
                     @Spec(path = "eventId.startDate", params = {"startDateGt", "startDateLt"}, spec = Between.class),
                     @Spec(path = "endDate", params = {"endDateGt", "endDateLt"}, spec = Between.class)
             }) Specification<Event> spec,
