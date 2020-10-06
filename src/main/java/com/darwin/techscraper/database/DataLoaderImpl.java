@@ -203,7 +203,6 @@ public class DataLoaderImpl implements DataLoader {
         String temp = loadDataComputerWorld();
         String temp2 = loadDataTechMeme();
 
-        System.out.println("TEST");
         if(temp == "Success!"){
             if(temp2 == "Success!"){
                 return "Success scraping both website!";
