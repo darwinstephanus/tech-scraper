@@ -45,6 +45,11 @@ public class DatabaseController {
         return ResponseEntity.ok(dataLoader.loadDataComputerWorld());
     }
 
+    @GetMapping("/load_all_data")
+    public ResponseEntity<?> loadAllData() throws IOException, ParseException {
+        return ResponseEntity.ok(dataLoader.loadAllData());
+    }
+
 //    @GetMapping(value= "/all_events")
 //    public List<Event> getEvents() {
 //        return eventService.getAllEvent();

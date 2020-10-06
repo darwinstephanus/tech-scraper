@@ -9,6 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class DataLoaderImpl implements DataLoader {
     @Autowired
     EventDao eventDao;
 
+    @Async
     public String loadDataComputerWorld() throws IOException, ParseException {
         Document document = Jsoup.connect(link).get();
         Element table = document.getElementsByTag("tbody").get(0);
@@ -74,6 +76,7 @@ public class DataLoaderImpl implements DataLoader {
         return "Success!";
     }
 
+    @Async
     public String loadDataTechMeme() throws IOException, ParseException {
         try{
             Document document = Jsoup.connect(link2).get();
@@ -193,15 +196,27 @@ public class DataLoaderImpl implements DataLoader {
         }
 
         return "Success!";
-
-//        Element table = document.getElementsByTag("events").get(0);
-//        System.out.println(table);
-//        Elements rows = table.select(".rhov");
-//
-//        Element firstTd = rows.get(0).child(0);
-//        String eventName;
-//        eventName = firstTd.text();
-//        System.out.println(eventName);
-
     }
+
+    @Async
+    public String loadAllData() throws IOException, ParseException {
+        String temp = loadDataComputerWorld();
+        String temp2 = loadDataTechMeme();
+
+        System.out.println("TEST");
+        if(temp == "Success!"){
+            if(temp2 == "Success!"){
+                return "Success scraping both website!";
+            }
+            else{
+                return "Success scraping only Computer World!";
+            }
+        }
+        else if(temp2 == "Success!"){
+            return "Success scraping only Tech Meme!";
+        }
+        return "Unsuccessful!";
+    }
+
+
 }
