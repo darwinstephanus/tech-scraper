@@ -7,7 +7,6 @@ import com.darwin.techscraper.entity.utils.PagingResponse;
 import com.darwin.techscraper.service.EventService;
 import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -49,11 +48,6 @@ public class DatabaseController {
     public ResponseEntity<?> loadAllData() throws IOException, ParseException {
         return ResponseEntity.ok(dataLoader.loadAllData());
     }
-
-//    @GetMapping(value= "/all_events")
-//    public List<Event> getEvents() {
-//        return eventService.getAllEvent();
-//    }
 
     @Transactional
     @GetMapping(value = "/api/events", produces = MediaType.APPLICATION_JSON_VALUE)

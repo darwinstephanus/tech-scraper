@@ -89,7 +89,7 @@ public class DataLoaderImpl implements DataLoader {
             for(int i=0; i<table.size(); i++){
                 Element firstTd = table.get(i).child(0);
 
-                //date
+                //parsing date
                 String dateBeforeSplit = firstTd.select("div:nth-of-type(1)").text();
                 String[] dates = dateBeforeSplit.split("-", 2);
                 String dateStartBeforeParse;

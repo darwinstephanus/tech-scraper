@@ -21,11 +21,7 @@ public class EventService {
 
     @Autowired
     EventDao eventDao;
-
-//    public List<Event> getAllEvent() {
-//        return eventDao.findAll();
-//    }
-
+    
     public PagingResponse get(Specification<Event> spec, HttpHeaders headers, Sort sort) {
         if (isRequestPaged(headers)) {
             return get(spec, buildPageRequest(headers, sort));
