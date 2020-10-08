@@ -1,9 +1,13 @@
 package com.darwin.techscraper.controller;
 
+import com.darwin.techscraper.common.CommonResponse;
+import com.darwin.techscraper.common.DataLoaderControllerAdvice;
 import com.darwin.techscraper.database.DataLoader;
 import com.darwin.techscraper.entity.Event;
 import com.darwin.techscraper.entity.utils.PagingHeaders;
 import com.darwin.techscraper.entity.utils.PagingResponse;
+import com.darwin.techscraper.exception.BadLinkException;
+import com.darwin.techscraper.exception.BadParseException;
 import com.darwin.techscraper.service.EventService;
 import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -35,16 +39,42 @@ public class DatabaseController {
     EventService eventService;
 
     @GetMapping("/load_data_tech_meme")
-    public ResponseEntity<?> loadDataTechMeme() throws IOException, ParseException {
-        return ResponseEntity.ok(dataLoader.loadDataTechMeme());
+    public CommonResponse loadDataTechMeme() {
+
+        try{
+//            System.out.println(dataLoader.loadDataTechMeme());
+            dataLoader.loadDataTechMeme();
+
+        } catch (BadLinkException e) {
+            DataLoaderControllerAdvice data = new DataLoaderControllerAdvice();
+            System.out.println("ABSDKJASDKJBASKDJBASKJD");
+            return data.handleBadLinkException(e);
+//            return new CommonResponse(400, e.getMessage());
+        } catch (BadParseException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (Exception e) {
+            return new CommonResponse(500, e.getMessage());
+        }
+
+        System.out.println("ASDJASHKDJHASKDJHASKJDHKASJDHKASJDh");
+        return new CommonResponse(200 ,"load data tech meme success!");
+//        if(dataLoader.loadDataTechMeme() == "Success!"){
+//            return ResponseEntity.ok(dataLoader.loadDataTechMeme());
+//        }
+//        else{
+//            return ResponseEntity.badRequest().of(dataLoader.loadDataTechMeme());
+//        }
+
     }
 
     @GetMapping("/load_data_computer_world")
+    @ExceptionHandler({ BadLinkException.class, BadParseException.class })
     public ResponseEntity<?> loadDataComputerWorld() throws IOException, ParseException {
         return ResponseEntity.ok(dataLoader.loadDataComputerWorld());
     }
 
     @GetMapping("/load_all_data")
+    @ExceptionHandler({ BadLinkException.class, BadParseException.class })
     public ResponseEntity<?> loadAllData() throws IOException, ParseException {
         return ResponseEntity.ok(dataLoader.loadAllData());
     }

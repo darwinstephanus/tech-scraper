@@ -3,6 +3,8 @@ package com.darwin.techscraper.database;
 import com.darwin.techscraper.dao.EventDao;
 import com.darwin.techscraper.entity.Event;
 import com.darwin.techscraper.entity.EventId;
+import com.darwin.techscraper.exception.BadLinkException;
+import com.darwin.techscraper.exception.BadParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,52 +34,66 @@ public class DataLoaderImpl implements DataLoader {
 
     @Async
     public String loadDataComputerWorld() throws IOException, ParseException {
-        Document document = Jsoup.connect(link).get();
-        Element table = document.getElementsByTag("tbody").get(0);
-        Elements rows = table.select("tr");
-        Elements href = rows.select("a");
 
-        for(int i=0; i<rows.size(); i++){
+        try{
+            Document document = Jsoup.connect(link).get();
+            Element table = document.getElementsByTag("tbody").get(0);
+            Elements rows = table.select("tr");
+            Elements href = rows.select("a");
 
-            //parse each information into strings
-            Element firstTd = rows.get(i).child(0);
-            String eventName;
-            eventName = firstTd.text();
+            for(int i=0; i<rows.size(); i++) {
 
-            Element secondTd = rows.get(i).child(2);
-            String startDate;
-            startDate = secondTd.text();
-            Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+                //parse each information into strings
+                Element firstTd = rows.get(i).child(0);
+                String eventName;
+                eventName = firstTd.text();
 
-            Element thirdTd = rows.get(i).child(3);
-            String endDate;
-            endDate = thirdTd.text();
-            Date date2=new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
+                Element secondTd = rows.get(i).child(2);
+                String startDate;
+                startDate = secondTd.text();
+                Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
 
-            Element fourthTd = rows.get(i).child(4);
-            String locationEvent;
-            locationEvent = fourthTd.text();
+                Element thirdTd = rows.get(i).child(3);
+                String endDate;
+                endDate = thirdTd.text();
+                Date date2 = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
 
-            String linkEvent = href.get(i).attr("abs:href");
+                Element fourthTd = rows.get(i).child(4);
+                String locationEvent;
+                locationEvent = fourthTd.text();
 
-            //combine into event object
-            EventId eventId = new EventId();
-            eventId.setName(eventName);
-            eventId.setStartDate(date1);
+                String linkEvent = href.get(i).attr("abs:href");
 
-            Event event = new Event();
-            event.setEventId(eventId);
-            event.setEndDate(date2);
-            event.setLocation(locationEvent);
-            event.setLink(linkEvent);
+                //combine into event object
+                EventId eventId = new EventId();
+                eventId.setName(eventName);
+                eventId.setStartDate(date1);
 
-            eventDao.save(event);
+                Event event = new Event();
+                event.setEventId(eventId);
+                event.setEndDate(date2);
+                event.setLocation(locationEvent);
+                event.setLink(linkEvent);
+
+                eventDao.save(event);
+            }
+        }
+        catch(IOException ex) {
+            throw new BadLinkException("Fail to get the document from specified link!");
+        }
+        catch(ParseException ex){
+            throw new BadParseException("Something went wrong while parsing this data: " + ex);
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
         }
         return "Success!";
     }
 
-    @Async
-    public String loadDataTechMeme() throws IOException, ParseException {
+//    @Async
+    public Integer loadDataTechMeme() throws IOException, ParseException{
+
+        int totalData = 0;
         try{
             Document document = Jsoup.connect(link2).get();
             Elements table = document.select("div.rhov");
@@ -189,31 +205,41 @@ public class DataLoaderImpl implements DataLoader {
                 event.setLink(linkEvent);
 
                 eventDao.save(event);
+                totalData++;
             }
+        }
+        catch(IOException ex) {
+            throw new BadLinkException("Fail to get the document from specified link!");
+        }
+        catch(ParseException ex){
+            throw new BadParseException("Something went wrong while parsing this data: " + ex);
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
 
-        return "Success!";
+        return totalData;
     }
 
     @Async
     public String loadAllData() throws IOException, ParseException {
         String temp = loadDataComputerWorld();
-        String temp2 = loadDataTechMeme();
+//        String temp2 = loadDataTechMeme();
 
-        if(temp == "Success!"){
-            if(temp2 == "Success!"){
-                return "Success scraping both website!";
-            }
-            else{
-                return "Success scraping only Computer World!";
-            }
-        }
-        else if(temp2 == "Success!"){
-            return "Success scraping only Tech Meme!";
-        }
+        System.out.println(temp);
+//        System.out.println(temp2);
+
+//        if(temp == "Success!"){
+//            if(temp2 == "Success!"){
+//                return "Success scraping both website!";
+//            }
+//            else{
+//                return "Success scraping only Computer World!";
+//            }
+//        }
+//        else if(temp2 == "Success!"){
+//            return "Success scraping only Tech Meme!";
+//        }
         return "Unsuccessful!";
     }
 

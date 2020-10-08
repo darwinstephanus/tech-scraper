@@ -8,7 +8,7 @@ public interface DataLoader {
 
     String loadDataComputerWorld() throws IOException, ParseException;
 
-    String loadDataTechMeme() throws IOException, ParseException;
+    Integer loadDataTechMeme() throws IOException, ParseException;
 
     String loadAllData() throws IOException, ParseException;
 }
