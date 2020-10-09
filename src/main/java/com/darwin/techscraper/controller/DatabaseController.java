@@ -42,22 +42,17 @@ public class DatabaseController {
     public CommonResponse loadDataTechMeme() {
 
         try{
-//            System.out.println(dataLoader.loadDataTechMeme());
             dataLoader.loadDataTechMeme();
-
         } catch (BadLinkException e) {
-            DataLoaderControllerAdvice data = new DataLoaderControllerAdvice();
-            System.out.println("ABSDKJASDKJBASKDJBASKJD");
-            return data.handleBadLinkException(e);
-//            return new CommonResponse(400, e.getMessage());
+            return new CommonResponse(400, e.getMessage());
         } catch (BadParseException e) {
             return new CommonResponse(400, e.getMessage());
         } catch (Exception e) {
             return new CommonResponse(500, e.getMessage());
         }
 
-        System.out.println("ASDJASHKDJHASKDJHASKJDHKASJDHKASJDh");
         return new CommonResponse(200 ,"load data tech meme success!");
+
 //        if(dataLoader.loadDataTechMeme() == "Success!"){
 //            return ResponseEntity.ok(dataLoader.loadDataTechMeme());
 //        }
@@ -69,14 +64,34 @@ public class DatabaseController {
 
     @GetMapping("/load_data_computer_world")
     @ExceptionHandler({ BadLinkException.class, BadParseException.class })
-    public ResponseEntity<?> loadDataComputerWorld() throws IOException, ParseException {
-        return ResponseEntity.ok(dataLoader.loadDataComputerWorld());
+    public CommonResponse loadDataComputerWorld() throws IOException, ParseException {
+        try{
+            dataLoader.loadDataComputerWorld();
+        } catch (BadLinkException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (BadParseException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (Exception e) {
+            return new CommonResponse(500, e.getMessage());
+        }
+        return new CommonResponse(200 ,"load data computer world success!");
+//        return ResponseEntity.ok(dataLoader.loadDataComputerWorld());
     }
 
     @GetMapping("/load_all_data")
     @ExceptionHandler({ BadLinkException.class, BadParseException.class })
-    public ResponseEntity<?> loadAllData() throws IOException, ParseException {
-        return ResponseEntity.ok(dataLoader.loadAllData());
+    public CommonResponse loadAllData() throws Throwable {
+        try{
+            dataLoader.loadAllData();
+        } catch (BadLinkException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (BadParseException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (Exception e) {
+            return new CommonResponse(500, e.getMessage());
+        }
+        return new CommonResponse(200 ,"load data computer world success!");
+//        return ResponseEntity.ok(dataLoader.loadAllData());
     }
 
     @Transactional

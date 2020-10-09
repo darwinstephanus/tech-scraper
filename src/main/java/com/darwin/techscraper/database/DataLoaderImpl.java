@@ -19,6 +19,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Year;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Component
 public class DataLoaderImpl implements DataLoader {
@@ -33,7 +35,9 @@ public class DataLoaderImpl implements DataLoader {
     EventDao eventDao;
 
     @Async
-    public String loadDataComputerWorld() throws IOException, ParseException {
+    public CompletableFuture<List<Event>> loadDataComputerWorld() throws IOException, ParseException {
+
+        List<Event> response = new ArrayList<>();
 
         try{
             Document document = Jsoup.connect(link).get();
@@ -76,6 +80,7 @@ public class DataLoaderImpl implements DataLoader {
                 event.setLink(linkEvent);
 
                 eventDao.save(event);
+                response.add(event);
             }
         }
         catch(IOException ex) {
@@ -87,13 +92,14 @@ public class DataLoaderImpl implements DataLoader {
         catch (Exception ex){
             ex.printStackTrace();
         }
-        return "Success!";
+        return CompletableFuture.completedFuture(response);
     }
 
-//    @Async
-    public Integer loadDataTechMeme() throws IOException, ParseException{
+    @Async
+    public CompletableFuture<List<Event>> loadDataTechMeme() throws IOException, ParseException{
 
-        int totalData = 0;
+        List<Event> response = new ArrayList<>();
+
         try{
             Document document = Jsoup.connect(link2).get();
             Elements table = document.select("div.rhov");
@@ -205,7 +211,7 @@ public class DataLoaderImpl implements DataLoader {
                 event.setLink(linkEvent);
 
                 eventDao.save(event);
-                totalData++;
+                response.add(event);
             }
         }
         catch(IOException ex) {
@@ -218,29 +224,46 @@ public class DataLoaderImpl implements DataLoader {
             ex.printStackTrace();
         }
 
-        return totalData;
+        return CompletableFuture.completedFuture(response);
+//        return "Success!";
+//        return totalData;
     }
 
-    @Async
-    public String loadAllData() throws IOException, ParseException {
+//    @Async
+    public List<EventId> loadAllData() throws Throwable {
+        CompletableFuture<List<Event>> dataComputerWorld = this.loadDataComputerWorld();
+        CompletableFuture<List<Event>> dataTechMeme = this.loadDataTechMeme();
+        List<EventId> dataAll;
+        try {
+            dataAll = new ArrayList<>(dataComputerWorld.get().stream().map(Event::getEventId).collect(Collectors.toList()));
+            dataAll.retainAll(dataTechMeme.get().stream().map(Event::getEventId).collect(Collectors.toList()));
+        } catch (Throwable e) {
+            throw e.getCause();
+        }
+
+        return dataAll;
+
+        /*
         String temp = loadDataComputerWorld();
-//        String temp2 = loadDataTechMeme();
+        String temp2 = loadDataTechMeme();
 
         System.out.println(temp);
-//        System.out.println(temp2);
+        System.out.println(temp2);
 
-//        if(temp == "Success!"){
-//            if(temp2 == "Success!"){
-//                return "Success scraping both website!";
-//            }
-//            else{
-//                return "Success scraping only Computer World!";
-//            }
-//        }
-//        else if(temp2 == "Success!"){
-//            return "Success scraping only Tech Meme!";
-//        }
-        return "Unsuccessful!";
+        if(temp == "Success!"){
+            if(temp2 == "Success!"){
+                return "Success scraping both website!";
+            }
+            else{
+                return "Success scraping only Computer World!";
+            }
+        }
+        else if(temp2 == "Success!"){
+            return "Success scraping only Tech Meme!";
+        }
+
+         */
+//        return "Unsuccessful!";
     }
 
 
