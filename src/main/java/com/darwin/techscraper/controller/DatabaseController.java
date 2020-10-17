@@ -52,14 +52,6 @@ public class DatabaseController {
         }
 
         return new CommonResponse(200 ,"load data tech meme success!");
-
-//        if(dataLoader.loadDataTechMeme() == "Success!"){
-//            return ResponseEntity.ok(dataLoader.loadDataTechMeme());
-//        }
-//        else{
-//            return ResponseEntity.badRequest().of(dataLoader.loadDataTechMeme());
-//        }
-
     }
 
     @GetMapping("/load_data_computer_world")
@@ -75,7 +67,6 @@ public class DatabaseController {
             return new CommonResponse(500, e.getMessage());
         }
         return new CommonResponse(200 ,"load data computer world success!");
-//        return ResponseEntity.ok(dataLoader.loadDataComputerWorld());
     }
 
     @GetMapping("/load_all_data")
@@ -91,7 +82,6 @@ public class DatabaseController {
             return new CommonResponse(500, e.getMessage());
         }
         return new CommonResponse(200 ,"load data computer world success!");
-//        return ResponseEntity.ok(dataLoader.loadAllData());
     }
 
     @Transactional
@@ -100,8 +90,6 @@ public class DatabaseController {
     public ResponseEntity<List<Event>> get(
             @And({
                     @Spec(path = "eventId.name", params = "name", spec = Like.class),
-                    @Spec(path = "eventId.startDate", params = "startDate", spec = Equal.class),
-                    @Spec(path = "endDate", params = "endDate", spec = Equal.class),
                     @Spec(path = "location", params = "location", spec = Like.class),
                     @Spec(path = "eventId.startDate", params = {"startDateGt", "startDateLt"}, spec = Between.class),
                     @Spec(path = "endDate", params = {"endDateGt", "endDateLt"}, spec = Between.class)

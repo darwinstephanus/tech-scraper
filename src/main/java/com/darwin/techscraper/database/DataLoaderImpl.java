@@ -225,11 +225,8 @@ public class DataLoaderImpl implements DataLoader {
         }
 
         return CompletableFuture.completedFuture(response);
-//        return "Success!";
-//        return totalData;
     }
 
-//    @Async
     public List<EventId> loadAllData() throws Throwable {
         CompletableFuture<List<Event>> dataComputerWorld = this.loadDataComputerWorld();
         CompletableFuture<List<Event>> dataTechMeme = this.loadDataTechMeme();
@@ -242,28 +239,6 @@ public class DataLoaderImpl implements DataLoader {
         }
 
         return dataAll;
-
-        /*
-        String temp = loadDataComputerWorld();
-        String temp2 = loadDataTechMeme();
-
-        System.out.println(temp);
-        System.out.println(temp2);
-
-        if(temp == "Success!"){
-            if(temp2 == "Success!"){
-                return "Success scraping both website!";
-            }
-            else{
-                return "Success scraping only Computer World!";
-            }
-        }
-        else if(temp2 == "Success!"){
-            return "Success scraping only Tech Meme!";
-        }
-
-         */
-//        return "Unsuccessful!";
     }
 
 
