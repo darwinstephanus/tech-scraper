@@ -1,9 +1,13 @@
 package com.darwin.techscraper.controller;
 
+import com.darwin.techscraper.common.CommonResponse;
+import com.darwin.techscraper.common.DataLoaderControllerAdvice;
 import com.darwin.techscraper.database.DataLoader;
 import com.darwin.techscraper.entity.Event;
 import com.darwin.techscraper.entity.utils.PagingHeaders;
 import com.darwin.techscraper.entity.utils.PagingResponse;
+import com.darwin.techscraper.exception.BadLinkException;
+import com.darwin.techscraper.exception.BadParseException;
 import com.darwin.techscraper.service.EventService;
 import net.kaczmarzyk.spring.data.jpa.domain.Between;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -35,18 +39,49 @@ public class DatabaseController {
     EventService eventService;
 
     @GetMapping("/load_data_tech_meme")
-    public ResponseEntity<?> loadDataTechMeme() throws IOException, ParseException {
-        return ResponseEntity.ok(dataLoader.loadDataTechMeme());
+    public CommonResponse loadDataTechMeme() {
+
+        try{
+            dataLoader.loadDataTechMeme();
+        } catch (BadLinkException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (BadParseException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (Exception e) {
+            return new CommonResponse(500, e.getMessage());
+        }
+
+        return new CommonResponse(200 ,"load data tech meme success!");
     }
 
     @GetMapping("/load_data_computer_world")
-    public ResponseEntity<?> loadDataComputerWorld() throws IOException, ParseException {
-        return ResponseEntity.ok(dataLoader.loadDataComputerWorld());
+    @ExceptionHandler({ BadLinkException.class, BadParseException.class })
+    public CommonResponse loadDataComputerWorld() throws IOException, ParseException {
+        try{
+            dataLoader.loadDataComputerWorld();
+        } catch (BadLinkException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (BadParseException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (Exception e) {
+            return new CommonResponse(500, e.getMessage());
+        }
+        return new CommonResponse(200 ,"load data computer world success!");
     }
 
     @GetMapping("/load_all_data")
-    public ResponseEntity<?> loadAllData() throws IOException, ParseException {
-        return ResponseEntity.ok(dataLoader.loadAllData());
+    @ExceptionHandler({ BadLinkException.class, BadParseException.class })
+    public CommonResponse loadAllData() throws Throwable {
+        try{
+            dataLoader.loadAllData();
+        } catch (BadLinkException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (BadParseException e) {
+            return new CommonResponse(400, e.getMessage());
+        } catch (Exception e) {
+            return new CommonResponse(500, e.getMessage());
+        }
+        return new CommonResponse(200 ,"load data computer world success!");
     }
 
     @Transactional
@@ -55,8 +90,6 @@ public class DatabaseController {
     public ResponseEntity<List<Event>> get(
             @And({
                     @Spec(path = "eventId.name", params = "name", spec = Like.class),
-                    @Spec(path = "eventId.startDate", params = "startDate", spec = Equal.class),
-                    @Spec(path = "endDate", params = "endDate", spec = Equal.class),
                     @Spec(path = "location", params = "location", spec = Like.class),
                     @Spec(path = "eventId.startDate", params = {"startDateGt", "startDateLt"}, spec = Between.class),
                     @Spec(path = "endDate", params = {"endDateGt", "endDateLt"}, spec = Between.class)
